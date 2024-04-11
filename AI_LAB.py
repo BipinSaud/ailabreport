@@ -511,219 +511,215 @@ if __name__ == "__main__":
 
 #10. Write a program that implements Tic Tac Toe  using the Minimax algorithm.
 '''
-import sys
+import random
 
-def print_board(board):
-    for row in board:
-        print(" | ".join(row))
-        print("-" * 5)
+board = [' ' for x in range(9)]
+player = 1
+Win = 1
+Draw = -1
+Running = 0
+Stop = 1
+###########################
+Game = Running
+Mark = 'X'
 
-def check_winner(board):
-    # Check rows
-    for row in board:
-        if row[0] == row[1] == row[2] != " ":
-            return row[0]
 
-    # Check columns
-    for col in range(3):
-        if board[0][col] == board[1][col] == board[2][col] != " ":
-            return board[0][col]
+# This Function Draws Game Board
+def DrawBoard():
+    print(" %c | %c | %c " % (board[0], board[1], board[2]))
+    print("___|___|___")
+    print(" %c | %c | %c " % (board[3], board[4], board[5]))
+    print("___|___|___")
+    print(" %c | %c | %c " % (board[6], board[7], board[8]))
+    print("   |   |   ")
 
-    # Check diagonals
-    if board[0][0] == board[1][1] == board[2][2] != " ":
-        return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] != " ":
-        return board[0][2]
 
-    return None
-
-def is_full(board):
-    for row in board:
-        for cell in row:
-            if cell == " ":
-                return False
-    return True
-
-def minimax(board, depth, maximizing_player):
-    winner = check_winner(board)
-    if winner:
-        return 1 if winner == 'X' else -1 if winner == 'O' else 0
-
-    if is_full(board):
-        return 0
-
-    if maximizing_player:
-        max_eval = -sys.maxsize
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == " ":
-                    board[i][j] = 'X'
-                    eval = minimax(board, depth+1, False)
-                    board[i][j] = " "
-                    max_eval = max(eval, max_eval)
-        return max_eval
+# This Function Checks position is empty or not
+def CheckPosition(x):
+    if (board[x] == ' '):
+        return True
     else:
-        min_eval = sys.maxsize
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == " ":
-                    board[i][j] = 'O'
-                    eval = minimax(board, depth+1, True)
-                    board[i][j] = " "
-                    min_eval = min(eval, min_eval)
-        return min_eval
+        return False
 
-def find_best_move(board):
-    best_eval = -sys.maxsize
-    best_move = None
-    for i in range(3):
-        for j in range(3):
-            if board[i][j] == " ":
-                board[i][j] = 'X'
-                eval = minimax(board, 0, False)
-                board[i][j] = " "
-                if eval > best_eval:
-                    best_eval = eval
-                    best_move = (i, j)
-    return best_move
 
-def main():
-    board = [[" " for _ in range(3)] for _ in range(3)]
-    print("Welcome to Tic Tac Toe")
-    print_board(board)
+# This Function Checks player has won or not
+def CheckWin():
+    global Game
+    # Horizontal winning condition
+    if (board[0] == board[1] and board[1] == board[2] and board[0] != ' '):
+        Game = Win
+    elif (board[3] == board[4] and board[4] == board[5] and board[3] != ' '):
+        Game = Win
+    elif (board[6] == board[7] and board[7] == board[8] and board[6] != ' '):
+        Game = Win
 
-    while True:
-        player_move = input("Enter your move (row column): ").split()
-        row, col = map(int, player_move)
-        if board[row][col] != " ":
-            print("Invalid move. Cell already occupied.")
-            continue
-        board[row][col] = 'O'
-        print_board(board)
-        winner = check_winner(board)
-        if winner:
-            print(f"Player '{winner}' wins!")
-            break
-        if is_full(board):
-            print("It's a draw!")
-            break
+    # Vertical Winning Condition
+    elif (board[0] == board[3] and board[3] == board[6] and board[0] != ' '):
+        Game = Win
+    elif (board[1] == board[4] and board[4] == board[7] and board[1] != ' '):
+        Game = Win
+    elif (board[2] == board[5] and board[5] == board[8] and board[2] != ' '):
+        Game = Win
 
-        print("Computer is thinking...")
-        computer_move = find_best_move(board)
-        board[computer_move[0]][computer_move[1]] = 'X'
-        print(f"Computer moves to ({computer_move[0]}, {computer_move[1]})")
-        print_board(board)
-        winner = check_winner(board)
-        if winner:
-            print(f"Computer '{winner}' wins!")
-            break
-        if is_full(board):
-            print("It's a draw!")
-            break
+    # Diagonal Winning Condition
+    elif (board[0] == board[4] and board[4] == board[8] and board[4] != ' '):
+        Game = Win
+    elif (board[2] == board[4] and board[4] == board[6] and board[4] != ' '):
+        Game = Win
 
-if __name__ == "__main__":
-    main()
-'''
+    # Match Tie or Draw Condition
+    elif (board[0] != ' ' and
+          board[1] != ' ' and
+          board[2] != ' ' and
+          board[3] != ' ' and
+          board[4] != ' ' and
+          board[5] != ' ' and
+          board[6] != ' ' and
+          board[7] != ' ' and
+          board[8] != ' '):
+        Game = Draw
+    else:
+        Game = Running
+
+
+print("---- Tic-Tac-Toe ----\n\n")
+print("Computer [X] --- User [O]\n\n\n")
+
+while (Game == Running):
+    DrawBoard()
+    if (player % 2 != 0):
+        print("Computer's chance")
+        Mark = 'X'
+        choice = random.randint(0, 8)
+    else:
+        print("User's chance")
+        Mark = 'O'
+        choice = int(input("Enter the position [0-8]: "))
+
+    if (CheckPosition(choice)):
+        board[choice] = Mark
+        player += 1
+        CheckWin()
+
+DrawBoard()
+if (Game == Draw):
+    print("Game is tied!🏅🏆")
+elif (Game == Win):
+    player -= 1
+
+if (player % 2 != 0):
+    print("Computer Wins!🏆")
+else:
+    print("User Wins!🏆")
+
+	'''
 
 #11. Write a program that implements Constraints Satisfaction Problem.
+
 '''
-puzzle = [[5, 3, 0, 0, 7, 0, 0, 0, 0], 
-		[6, 0, 0, 1, 9, 5, 0, 0, 0], 
-		[0, 9, 8, 0, 0, 0, 0, 6, 0], 
-		[8, 0, 0, 0, 6, 0, 0, 0, 3], 
-		[4, 0, 0, 8, 0, 3, 0, 0, 1], 
-		[7, 0, 0, 0, 2, 0, 0, 0, 6], 
-		[0, 6, 0, 0, 0, 0, 2, 8, 0], 
-		[0, 0, 0, 4, 1, 9, 0, 0, 5], 
-		[0, 0, 0, 0, 8, 0, 0, 0, 0] 
-		] 
+from itertools import permutations
 
-def print_sudoku(puzzle): 
-	for i in range(9): 
-		if i % 3 == 0 and i != 0: 
-			print("- - - - - - - - - - - ") 
-		for j in range(9): 
-			if j % 3 == 0 and j != 0: 
-				print(" | ", end="") 
-			print(puzzle[i][j], end=" ") 
-		print() 
+# Define the variables representing Australian states
+variables = ('WA', 'NT', 'SA', 'Q', 'NSW', 'V', 'T')
 
-print_sudoku(puzzle) 
+# Define the domains as colors for each state
+domains = {v: ['red', 'green', 'blue'] for v in variables}
 
-class CSP: 
-	def __init__(self, variables, Domains,constraints): 
-		self.variables = variables 
-		self.domains = Domains 
-		self.constraints = constraints 
-		self.solution = None
+# Define a function to check if neighbors have different values
+def const_different(variables, values):
+    return values[0] != values[1]  # Expect the value of the neighbors to be different
 
-	def solve(self): 
-		assignment = {} 
-		self.solution = self.backtrack(assignment) 
-		return self.solution 
+# Define constraints between neighbors (states) to have different colors (values)
+constraints = [
+    (('WA', 'NT'), const_different),
+    (('WA', 'SA'), const_different),
+    (('SA', 'NT'), const_different),
+    (('SA', 'Q'), const_different),
+    (('NT', 'Q'), const_different),
+    (('SA', 'NSW'), const_different),
+    (('Q', 'NSW'), const_different),
+    (('SA', 'V'), const_different),
+    (('NSW', 'V'), const_different),
+]
 
-	def backtrack(self, assignment): 
-		if len(assignment) == len(self.variables): 
-			return assignment 
+# Define a function to check if the assignment satisfies all constraints
+def is_valid(assignment):
+    for (var1, var2), constraint in constraints:
+        if var1 not in assignment or var2 not in assignment:
+            continue  # Skip constraints involving unassigned variables
+        if (assignment[var1], assignment[var2]) not in permutations(domains[var1], 2):
+            continue  # Skip if the constraint does not involve the assigned values
+        if not constraint((var1, var2), (assignment[var1], assignment[var2])):
+            return False
+    return True
 
-		var = self.select_unassigned_variable(assignment) 
-		for value in self.order_domain_values(var, assignment): 
-			if self.is_consistent(var, value, assignment): 
-				assignment[var] = value 
-				result = self.backtrack(assignment) 
-				if result is not None: 
-					return result 
-				del assignment[var] 
-		return None
 
-	def select_unassigned_variable(self, assignment): 
-		unassigned_vars = [var for var in self.variables if var not in assignment] 
-		return min(unassigned_vars, key=lambda var: len(self.domains[var])) 
+# Define a function to backtrack search for a solution
+def backtrack_search(assignment):
+    if len(assignment) == len(variables):
+        return assignment
+    var = next(var for var in variables if var not in assignment)
+    for value in domains[var]:
+        new_assignment = assignment.copy()
+        new_assignment[var] = value
+        if is_valid(new_assignment):
+            result = backtrack_search(new_assignment)
+            if result is not None:
+                return result
+    return None
 
-	def order_domain_values(self, var, assignment): 
-		return self.domains[var] 
+# Solve the CSP problem using backtrack search algorithm
+solution_backtrack = backtrack_search({})
 
-	def is_consistent(self, var, value, assignment): 
-		for constraint_var in self.constraints[var]: 
-			if constraint_var in assignment and assignment[constraint_var] == value: 
-				return False
-		return True
-	
-	
-# Variables 
-variables = [(i, j) for i in range(9) for j in range(9)] 
-# Domains 
-Domains = {var: set(range(1, 10)) if puzzle[var[0]][var[1]] == 0
-						else {puzzle[var[0]][var[1]]} for var in variables} 
+# Print the solution
+print("Solution using backtrack search:")
+print(solution_backtrack)
+'''
 
-# Add contraint 
-def add_constraint(var): 
-	constraints[var] = [] 
-	for i in range(9): 
-		if i != var[0]: 
-			constraints[var].append((i, var[1])) 
-		if i != var[1]: 
-			constraints[var].append((var[0], i)) 
-	sub_i, sub_j = var[0] // 3, var[1] // 3
-	for i in range(sub_i * 3, (sub_i + 1) * 3): 
-		for j in range(sub_j * 3, (sub_j + 1) * 3): 
-			if (i, j) != var: 
-				constraints[var].append((i, j)) 
-# constraints		 
-constraints = {} 
-for i in range(9): 
-	for j in range(9): 
-		add_constraint((i, j)) 
-		
-# Solution 
-print('*'*7,'Solution','*'*7) 
-csp = CSP(variables, Domains, constraints) 
-sol = csp.solve() 
+#12.Write a program to find local maxima using hill climb search algorithm
+'''
 
-solution = [[0 for i in range(9)] for i in range(9)] 
-for i,j in sol: 
-	solution[i][j]=sol[i,j] 
-	
-print_sudoku(solution)
+# This dictionary holds all the nodes with their successors and their corresponding heuristic value
+adjList = {
+    'A': [('B', 10), ('J', 8), ('F', 7)],
+    'B': [('D', 4), ('C', 2)],
+    'C': [('H', 0)],
+    'E': [('I', 6)],
+    'F': [('E', 5), ('G', 3)],
+    'I': [('K', 0)],
+    'J': [('K', 0)],
+}
 
+# root node
+initial_node = str(input("Input initial node: ")).capitalize()
+# holds heuristic value of root node
+initial_value = eval(input(f"Input {initial_node}'s heuristic value: "))
+
+# Function to sort the selected list in ascending order based on heuristic value
+
+
+def sortList(new_list):
+    new_list.sort(key=lambda x: x[1])
+    return new_list
+
+
+# Function to find shortest path using heuristic value
+def hillClimbing_search(node, value):
+    new_list = list()
+    if node in adjList.keys():
+        new_list = adjList[node]
+        new_list = sortList(new_list)
+        if (value > new_list[0][1]):
+            value = new_list[0][1]
+            node = new_list[0][0]
+            hillClimbing_search(node, value)
+        if (value < new_list[0][1]):
+            print(
+                f"\nLocal maxima at node: '{node}'\nHeuristic value: {value}")
+    else:
+        print(f"\nLocal maxima at node: '{node}'\nHeuristic value: {value}")
+
+
+if __name__ == "__main__":
+    hillClimbing_search(initial_node, initial_value) 
 '''
